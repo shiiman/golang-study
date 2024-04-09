@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/go-playground/validator"
 	"github.com/labstack/echo/v4"
@@ -76,7 +77,7 @@ func formParam(c echo.Context) error {
 
 type User struct {
 	ID   string `param:"id"`
-	Name string `query:"name" validate:"required"`
+	Name string `query:"name" validate:"required,containsghost"`
 	// Mail   string `form:"mail"`
 	Height int    `json:"height"`
 	Weight int    `json:"weight"`
@@ -112,5 +113,11 @@ func NewValidator() echo.Validator {
 
 // Validate validate
 func (cv *CustomValidator) Validate(i interface{}) error {
+	cv.validator.RegisterValidation("containsghost", GhostContainsValidate)
 	return cv.validator.Struct(i)
+}
+
+// GhostContainsValidate
+func GhostContainsValidate(fl validator.FieldLevel) bool {
+	return strings.Contains(fl.Field().String(), "ghost")
 }

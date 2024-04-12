@@ -37,19 +37,36 @@ func (suite *SumSuite) AfterTest(suiteName, testName string) {
 }
 
 // 実際のテスト(成功ケース).
-func (s *SumSuite) TestSuccess() {
-	actual := sum(3, 5)
-	expected := 8
+// func (s *SumSuite) TestSuccess() {
+// 	actual := sum(3, 5)
+// 	expected := 8
 
-	assert.Equal(s.T(), expected, actual)
-}
+// 	assert.Equal(s.T(), expected, actual)
+// }
 
-// 実際のテスト(失敗ケース).
-func (s *SumSuite) TestFail() {
-	actual := sum(3, 5)
-	expected := 7
+// // 実際のテスト(失敗ケース).
+// func (s *SumSuite) TestFail() {
+// 	actual := sum(3, 5)
+// 	expected := 7
 
-	assert.NotEqual(s.T(), expected, actual)
+// 	assert.NotEqual(s.T(), expected, actual)
+// }
+
+// サブテストで実行する場合.
+func (s *SumSuite) TestSub() {
+	s.Run("TestSuccess", func() {
+		actual := sum(3, 5)
+		expected := 8
+
+		assert.Equal(s.T(), expected, actual)
+	})
+
+	s.Run("TestFail", func() {
+		actual := sum(3, 5)
+		expected := 7
+
+		assert.NotEqual(s.T(), expected, actual)
+	})
 }
 
 // テストを実行する.

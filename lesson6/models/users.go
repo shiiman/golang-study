@@ -1128,3 +1128,61 @@ func UserExists(ctx context.Context, exec boil.ContextExecutor, iD string) (bool
 func (o *User) Exists(ctx context.Context, exec boil.ContextExecutor) (bool, error) {
 	return UserExists(ctx, exec, o.ID)
 }
+
+// InsertAll inserts all rows with the specified column values, using an executor.
+func (o UserSlice) InsertAll(ctx context.Context, exec boil.ContextExecutor, columns boil.Columns) error {
+	ln := int64(len(o))
+	if ln == 0 {
+		return nil
+	}
+	var sql string
+	vals := []interface{}{}
+	for i, row := range o {
+		if !boil.TimestampsAreSkipped(ctx) {
+			currTime := time.Now().In(boil.GetLocation())
+
+			if row.CreatedAt.IsZero() {
+				row.CreatedAt = currTime
+			}
+			if row.UpdatedAt.IsZero() {
+				row.UpdatedAt = currTime
+			}
+		}
+
+		if err := row.doBeforeInsertHooks(ctx, exec); err != nil {
+			return err
+		}
+
+		nzDefaults := queries.NonZeroDefaultSet(userColumnsWithDefault, row)
+		wl, _ := columns.InsertColumnSet(
+			userAllColumns,
+			userColumnsWithDefault,
+			userColumnsWithoutDefault,
+			nzDefaults,
+		)
+		if i == 0 {
+			sql = "INSERT INTO `users` " + "(`" + strings.Join(wl, "`,`") + "`)" + " VALUES "
+		}
+		sql += strmangle.Placeholders(dialect.UseIndexPlaceholders, len(wl), len(vals)+1, len(wl))
+		if i != len(o)-1 {
+			sql += ","
+		}
+		valMapping, err := queries.BindMapping(userType, userMapping, wl)
+		if err != nil {
+			return err
+		}
+		value := reflect.Indirect(reflect.ValueOf(row))
+		vals = append(vals, queries.ValuesFromMapping(value, valMapping)...)
+	}
+	if boil.DebugMode {
+		fmt.Fprintln(boil.DebugWriter, sql)
+		fmt.Fprintln(boil.DebugWriter, vals...)
+	}
+
+	_, err := exec.ExecContext(ctx, sql, vals...)
+	if err != nil {
+		return errors.Wrap(err, "models: unable to insert into users")
+	}
+
+	return nil
+}

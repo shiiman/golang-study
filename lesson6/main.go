@@ -34,6 +34,29 @@ func main() {
 		log.Fatal(err)
 	} */
 
+	// ユーザ複数登録.
+	/* userSlice := models.UserSlice{
+		{
+			ID:       "1",
+			Username: "test_user1",
+			Email:    "test1@email",
+		},
+		{
+			ID:       "2",
+			Username: "test_user2",
+			Email:    "test2@email",
+		},
+		{
+			ID:       "3",
+			Username: "test_user3",
+			Email:    "test3@email",
+		},
+	}
+	err = userSlice.InsertAll(ctx, db, boil.Infer())
+	if err != nil {
+		log.Fatal(err)
+	} */
+
 	// user更新.
 	/* user, err := models.FindUser(ctx, db, "1")
 	if err != nil {
@@ -49,7 +72,7 @@ func main() {
 	} */
 
 	// user削除.
-	user, err := models.FindUser(ctx, db, "1")
+	/* user, err := models.FindUser(ctx, db, "1")
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -59,7 +82,7 @@ func main() {
 	_, err = user.Delete(ctx, db, false)
 	if err != nil {
 		log.Fatal(err)
-	}
+	} */
 
 	// usersテーブルから全ユーザーを取得.
 	users, err := models.Users().All(ctx, db)

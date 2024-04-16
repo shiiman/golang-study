@@ -1,0 +1,26 @@
+add-enum-types = true
+add-soft-deletes = true
+no-tests = true
+output = "models"
+wipe = true
+
+templates = [
+  "/home/ec2-user/go/pkg/mod/github.com/volatiletech/sqlboiler/v4@v4.16.2/templates",
+  "/home/ec2-user/go/pkg/mod/github.com/volatiletech/sqlboiler/v4@v4.16.2/templates/test",
+  "templates",
+]
+
+[mysql]
+dbname = "migrate_test"
+host = "127.0.0.1"
+pass = "admin"
+port = 3306
+sslmode = "false"
+user = "admin_user"
+whitelist = [
+  "users",
+]
+
+blacklist = [
+  "schema_migrations",
+]
